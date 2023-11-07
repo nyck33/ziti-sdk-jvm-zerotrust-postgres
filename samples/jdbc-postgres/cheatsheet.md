@@ -117,3 +117,141 @@ Not needed unless you want to try again without recreating docker
 
     echo "127.0.0.1       ziti-edge-controller" | sudo tee -a /etc/hosts
     echo "127.0.0.1       ziti-edge-router" | sudo tee -a /etc/hosts
+
+
+# Below My Edits Nov.5 
+
+Certainly. Here's a cleanly formatted overview of the provided cheat sheet:
+
+---
+
+# Ziti Environment Setup with Docker Compose
+
+## **SETUP Work**
+
+1. **Prerequisites**:
+    - Ensure Java 11+ is installed and accessible from the terminal:
+      ```bash
+      java -version
+      ```
+
+    - This example utilizes docker-compose. Ensure you have `docker` and `docker-compose` installed.
+
+2. **Retrieve Ziti Repository**:
+    - Clone the Ziti repository:
+      ```bash
+      git clone git@github.com:openziti/ziti.git
+      ```
+    - Alternatively, directly download the necessary files:
+      ```bash
+      curl https://raw.githubusercontent.com/openziti/ziti/release-next/quickstart/docker/docker-compose.yml > /tmp/docker-compose.yml
+      curl https://raw.githubusercontent.com/openziti/ziti/release-next/quickstart/docker/.env > /tmp/.env
+      ```
+
+3. **Modify Docker Compose File**:
+    - Modify the `postgres-db` service as shown below:
+      ```yaml
+      postgres-db:
+        image: postgres
+        #ports:
+        #  - 5432:5432
+        networks:
+          - zitiblue
+        volumes:
+          - ./data/db:/var/lib/postgresql/data
+        environment:
+          - POSTGRES_DB=postgres
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+      ```
+
+4. **Launch Docker Environment**:
+    ```bash
+    docker-compose -f /tmp/docker-compose.yml -p pg down -v
+    clear; docker-compose -f /tmp/docker-compose.yml -p pg up
+    ```
+    # this folder's alternate commands:
+    ```bash
+    docker-compose -f /media/nyck33/1TB-backup/cybersec/openziti/ziti-sdk-jvm/samples/jdbc-postgres/tmp/docker-compose.yml -p pg down -v clear; docker-compose -f /media/nyck33/1TB-backup/cybersec/openziti/ziti-sdk-jvm/samples/jdbc-postgres/tmp/docker-compose.yml -p pg up
+
+    ```
+
+5. **Bootstrap PostgreSQL**:
+    ```bash
+    docker exec -it -u root pg_ziti-private-blue_1 /bin/bash
+    apt update && apt install postgresql-client -y --fix-missing
+    PGPASSWORD=postgres psql -h postgres-db -U postgres
+    ```
+
+   Once connected to PostgreSQL, execute the following SQL commands:
+   ```sql
+   DROP DATABASE simpledb;
+   CREATE DATABASE simpledb;
+   ALTER DATABASE simpledb OWNER TO postgres;
+   \connect simpledb;
+   CREATE TABLE simpletable(chardata varchar(100), somenumber int);
+   INSERT INTO simpletable VALUES('a', 1), ('b', 2), ... , ('j', 0);
+   SELECT * FROM simpletable;
+   ```
+
+   Confirm that PostgreSQL's port 5432 is not exposed:
+   ```bash
+   docker ps
+   ```
+
+## **ZITI BOOTSTRAPPING**
+
+1. **Access the Ziti Controller**:
+    ```bash
+    docker exec -it pg_ziti-controller_1 bash
+    ```
+
+2. **Login to the Local Ziti Instance**:
+    ```bash
+    ziti edge login ziti-edge-controller:1280 -u admin -p admin
+    ```
+    or use the shorthand:
+    ```bash
+    zitiLogin
+    ```
+
+### **CLEANUP COMMANDS**:
+
+Use these commands if you want to restart without recreating the Docker containers:
+
+```bash
+ziti edge delete service private-postgres
+...
+ziti edge delete identity java-identity
+```
+
+### **CREATE/UPDATE COMMANDS**:
+
+Set up configurations, services, and policies:
+
+```bash
+ziti edge create config private-postgres-intercept.v1 ...
+ziti edge create service-policy postgres-bind-policy Bind ...
+```
+
+### **CREATE JAVA ID for SDK Demo**:
+
+Replace the path accordingly:
+
+```bash
+ziti edge create identity user java-identity ...
+docker cp pg_ziti-controller_1:/openziti/java-identity.json .
+```
+
+### **Hosts File Modifications**:
+
+You can add `ziti-edge-controller` and `ziti-edge-router` to your hosts file. Ensure to remove them afterwards:
+
+```bash
+echo "127.0.0.1       ziti-edge-controller" | sudo tee -a /etc/hosts
+echo "127.0.0.1       ziti-edge-router" | sudo tee -a /etc/hosts
+```
+
+---
+
+This cheat sheet provides a step-by-step guide to set up a Ziti environment tailored for a PostgreSQL service using Docker Compose. It's recommended to follow the instructions sequentially to ensure a successful setup.

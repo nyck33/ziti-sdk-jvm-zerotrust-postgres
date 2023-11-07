@@ -34,7 +34,8 @@ public class App {
 		if (args.length > 0) {
 			identityLocation = args[0];
 		} else {
-			identityLocation = "/tmp/java-identity.json";
+			//identityLocation = "/tmp/java-identity.json";
+			identityLocation = "/media/nyck33/1TB-backup/cybersec/openziti/ziti-sdk-jvm/samples/jdbc-postgres/tmp/java-identity.json";
 		}
 		
 		if(Files.notExists(Paths.get(identityLocation))) {

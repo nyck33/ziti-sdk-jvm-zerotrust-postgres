@@ -5,3 +5,5 @@ This sample will illustrate the commands needed to setup a test environment usin
 See the [cheatsheet](./cheatsheet.md) for the commands necessary to run the sample.
 
 Watch a [demonstration video](https://youtu.be/k2KlFXDQxvo) illustrating the process
+
+![Alt text](image.png)
