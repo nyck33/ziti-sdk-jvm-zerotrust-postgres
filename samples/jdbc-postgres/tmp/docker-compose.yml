@@ -228,8 +228,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       
-
-
 networks:
   zitired:
     driver: bridge

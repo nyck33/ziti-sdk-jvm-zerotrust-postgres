@@ -105,11 +105,11 @@ Not needed unless you want to try again without recreating docker
 
 (replace the path accordingly)
 
-    ziti edge create identity user java-identity -o java-identity.jwt -a "postgres-clients" 
-    ziti edge enroll java-identity.jwt -o java-identity.json
-    
-    # exit docker
-    docker cp pg_ziti-controller_1:/openziti/java-identity.json .
+ziti edge create identity user java-identity -o java-identity.jwt -a "postgres-clients" 
+ziti edge enroll java-identity.jwt -o java-identity.json
+
+# exit docker
+docker cp pg-ziti-controller-1:/openziti/java-identity.json .
 
 ### Easy way of adding ziti-edge-controller/ziti-edge-router to you hosts file if you wish
 
